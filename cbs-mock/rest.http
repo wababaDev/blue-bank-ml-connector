@@ -1,0 +1,25 @@
+### Authentication
+POST http://localhost:4040/auth/token
+Content-Type: application/json
+
+{
+  "client_id": "string",
+  "client_secret": "string"
+}
+
+
+### Get Account Information
+GET http://localhost:4040/accounts/5555/info
+
+#### Create Transaction
+POST http://localhost:4040/transactions
+Content-Type: application/json
+Authorization: Bearer YOUR_TOKEN_HERE
+
+{
+  "from_account": "string",
+  "to_account": "string",
+  "amount": 0,
+  "currency": "string",
+  "description": "string"
+}
