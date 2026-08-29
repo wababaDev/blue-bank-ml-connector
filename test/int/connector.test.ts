@@ -5,8 +5,7 @@ import { ConnectorError } from "../../src/errors";
 
 export type TBlueBankConfig = {
     BLUE_BANK_URL: string;
-    BLUE_BANK_CLIENT_ID: string;
-    BLUE_BANK_CLIENT_SECRET: string;
+    BLUE_BANK_AUTH_KEY: string;
 }
 
 const httpClient: IHTTPClient = AxiosClientFactory.createAxiosClientInstance();

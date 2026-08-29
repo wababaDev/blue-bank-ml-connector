@@ -34,18 +34,22 @@ Core ->> Core: Check response
 alt if HTTP error code 500, 400, 504 or currentState = ERROR_OCCURED
     Core ->> BankAPI: POST /funds/refund
     note left
-    {
-        "homeTransactionId": "FNEWPWPKD3904L",
-        "reason": "CUSTOMER_REQUEST"
-    }
+   {
+  "home_transaction_id": "REPLACE_ME",
+  "reason": "transfer failed downstream after debit"
+}
     end note
 
     BankAPI -->> Core: Check Response
     note right
-    {
-        "homeTransactionId": "FNEWPWPKD3904L",
-        "refundCompleted": true
-    }
+   
+  "success": true,
+  "data": {
+    "debitId": "a80fd554-a272-40d2-8742-b431596a26a8",
+    "homeTransactionId": "HTX17F0A9CCB904",
+    "status": "REFUNDED"
+  }
+}
     end note
 
     alt if Response not Successful

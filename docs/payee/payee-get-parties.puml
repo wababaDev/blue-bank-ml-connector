@@ -5,7 +5,7 @@ autonumber
 
 participant "ML Connector" as ML
 participant "Core Connector" as CC
-participant "DFSP API" as SBAPI
+participant "Blue Bank API" as SBAPI
 
 ML ->> CC: GET /parties/{idType}/{idValue}
 
@@ -15,16 +15,18 @@ alt If Checks fail
     CC -->> ML: Response 400
 end
 
-CC ->> SBAPI: GET /accounts/{partyIdType}/{partyIdentifier}
+CC ->> SBAPI: GET /accounts/{partyIdentifier}
 
 SBAPI -->> CC: Response
 note right
 {
-    "partyIdType": "MSISDN",
-    "partyIdentifier": "string",
-    "name": "string",
-    "currency": "MWK",
+  "success": true,
+  "data": {
+    "accountId": "260970000000",
+    "name": "Mercy Uzumaki",
+    "currency": "ZMW",
     "isActive": true
+  }
 }
 end note
 

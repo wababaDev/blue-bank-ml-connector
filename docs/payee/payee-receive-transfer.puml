@@ -5,7 +5,7 @@ autonumber
 
 participant "ML Connector" as ML
 participant "Core Connector" as CC
-participant "DFSP API" as SBAPI
+participant "Blue Bank API" as SBAPI
 
 ML ->> CC: POST /transfers/ {}
 
@@ -15,15 +15,15 @@ alt if Checks Fail
     CC -->> ML: Response 500
 end
 
-CC ->> SBAPI: GET /accounts/{partyIdType}/{partyIdentifier}
+CC ->> SBAPI: GET /accounts/{partyIdentifier}
 
 note over SBAPI
 {
-    "partyIdType": "MSISDN",
-    "partyIdentifier": "string",
-    "name": "string",
-    "currency": "MWK",
-    "isActive": true
+  "success": false,
+  "error": {
+    "code": 404,
+    "message": "Account not found"
+  }
 }
 end note
 SBAPI -->> CC: Response
@@ -38,17 +38,11 @@ end
 CC ->> SBAPI: POST /funds/reserve
 note left
 {
-    "transferId": "string",
-    "payee": {
-        "partyIdType": "MSISDN",
-        "partyIdentifier": "string",
-        "name": "string",
-        "accountType": "string"
-    },
-    "amount": {
-        "amount": 100.5,
-        "currency": "MWK"
-    }
+  "success": true,
+  "data": {
+    "reserveId": "3c5d424b-21e5-4d97-9694-6aa4dc62f7a4",
+    "status": "RESERVED"
+  }
 }
 end note
 
@@ -56,9 +50,11 @@ end note
 SBAPI -->> CC: Response
 note right
 {
-    "reserveId": "string",
-    "transferId": "string",
+  "success": true,
+  "data": {
+    "reserveId": "e4c63007-0348-4962-ae39-32ba656f20bf",
     "status": "RESERVED"
+  }
 }
 end note
 
@@ -75,18 +71,21 @@ alt if Current State !== COMPLETED
    
     CC ->> SBAPI: POST /funds/unreserve
     note left
-    {
-        "reserveId": "string",
-        "reason": "string"
-    }
+        {
+        "reserve_id": "REPLACE_ME",
+        "reason": "downstream transfer failed"
+        }
     end note
 
     
     SBAPI -->> CC: Response 200
     note right
-    {
-        "reserveId": "string",
+   {
+    "success": true,
+    "data": {
+        "reserveId": "f7f64a01-8281-4471-8790-5ad3834a8838",
         "status": "RELEASED"
+    }
     }
     end note
     CC -->> ML: Response 500
@@ -96,15 +95,18 @@ end
 CC ->> SBAPI: POST /funds/commit
 note left
 {
-    "reserveId": "string"
+  "reserve_id": "REPLACE_ME"
 }
 end note
 
 SBAPI -->> CC: Response
 note right
 {
-    "transferId": "string",
+  "success": true,
+  "data": {
+    "reserveId": "0586afca-2347-4b58-8aa9-6f2f44c5f10b",
     "status": "COMMITTED"
+  }
 }
 end note
 
