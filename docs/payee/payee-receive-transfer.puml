@@ -38,11 +38,9 @@ end
 CC ->> SBAPI: POST /funds/reserve
 note left
 {
-  "success": true,
-  "data": {
-    "reserveId": "3c5d424b-21e5-4d97-9694-6aa4dc62f7a4",
-    "status": "RESERVED"
-  }
+  "account_id": "260970000000",
+  "amount": 100.0,
+  "currency": "ZMW"
 }
 end note
 

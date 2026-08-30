@@ -24,7 +24,7 @@ if (!blueBankConfig.cbs) {
     );
 }
 
-const blueBankCbs: ICbsClient = new BlueBankCBSClient<TBlueBankConfig>(blueBankConfig.cbs, httpClient, logger);
+const blueBankCbs: ICbsClient = new BlueBankCBSClient(blueBankConfig.cbs, httpClient, logger);
 const coreConnector = coreConnectorServiceFactory({ cbsClient: blueBankCbs, config: blueBankConfig });
 
 // Start Core Connector

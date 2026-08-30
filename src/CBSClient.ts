@@ -15,40 +15,67 @@ import {
     TtransferResponse,
 } from '@mojaloop/core-connector-lib';
 import { ConnectorError } from './errors';
+import { TAccountInfoResponse, TBBQuoteRequest, TBlueBankConfig, TBBQuoteResponse, TAccountInfoResponseData, TReserveFundsResponse, TReserveFundsRequest } from './types';
 
-export class BlueBankCBSClient<D> implements ICbsClient {
-    cbsConfig: TCBSConfig<D>;
+export class BlueBankCBSClient implements ICbsClient {
+    cbsConfig: TCBSConfig<TBlueBankConfig>;
     httpClient: IHTTPClient;
     logger: ILogger;
 
-    constructor(cbsConfig: TCBSConfig<D>, httpClient: IHTTPClient, logger: ILogger) {
+    constructor(cbsConfig: TCBSConfig<TBlueBankConfig>, httpClient: IHTTPClient, logger: ILogger) {
         this.cbsConfig = cbsConfig;
         this.httpClient = httpClient;
         this.logger = logger;
     }
 
+    private getAuthHeaders() {
+        return {
+            Authorization: `Bearer ${this.cbsConfig.config.BLUE_BANK_AUTH_KEY}`,
+        };
+    }
+
+    // Helper function for get account info and do checks
+    private async getAccount(accountId: string): Promise<TAccountInfoResponseData> {
+        let res;
+        try {
+            res = await this.httpClient.get<TAccountInfoResponse>(
+                `${this.cbsConfig.config.BLUE_BANK_URL}/accounts/${accountId}`,
+                { headers: this.getAuthHeaders() }
+            );
+        } catch (err: any) {
+            if (err?.response?.status === 404) {
+                throw ConnectorError.cbsConfigUndefined('Party Not Found', '2000', 404);
+            }
+            throw ConnectorError.cbsConfigUndefined('Failed to fetch account info from Blue Bank', '2001', 500);
+        }
+
+        if (!res.data.success) {
+            throw ConnectorError.cbsConfigUndefined('Blue Bank returned an unsuccessful response', '2001', 500);
+        }
+
+        return res.data.data;
+    }
+
     async getAccountInfo(deps: TGetKycArgs): Promise<Party> {
         this.logger.info(`Getting party account information`, deps);
-        if (deps.accountId === '46733123450') {
-            throw ConnectorError.cbsConfigUndefined('Party Not Found', '2000', 500);
-        }
-        const party = {
-            dateOfBirth: '1990-05-15',
-            displayName: 'John Doe',
-            firstName: 'John',
-            fspId: 'yz123',
+
+        const account = await this.getAccount(deps.accountId);
+
+        const party: Party = {
+            displayName: account.name,
+            firstName: account.name.split(' ')[0],
+            lastName: account.name.split(' ').slice(1).join(' ') || account.name,
+            fspId: this.cbsConfig.FSP_ID,
             idSubValue: deps.subId,
             idType: 'MSISDN',
-            idValue: deps.accountId,
-            lastName: 'Doe',
-            merchantClassificationCode: '5311',
-            middleName: 'Alexander',
+            idValue: account.accountId,
             type: 'PERSON',
-            supportedCurrencies: this.cbsConfig.CURRENCY,
-            kycInformation: 'Verified with national ID and proof of address',
+            supportedCurrencies: account.currency,
+            kycInformation: account.isActive ? 'Active account' : 'Inactive account',
+            middleName: account.name.split(' ')[0]
         };
         this.logger.debug('Party', party);
-        return Promise.resolve(party);
+        return party;
     }
 
     getAccountDiscoveryExtensionLists(): TPayeeExtensionListEntry[] {
@@ -62,32 +89,57 @@ export class BlueBankCBSClient<D> implements ICbsClient {
 
     async getQuote(quoteRequest: TQuoteRequest): Promise<TQuoteResponse> {
         this.logger.info(`Processing quoteRequest`, quoteRequest);
+
+        await this.getAccount(quoteRequest.from.idValue);
+
+        let quoteBlueBankRequest: TBBQuoteRequest = {
+            account_id: quoteRequest.from.idValue,
+            amount: Number(quoteRequest.amount),
+            currency: quoteRequest.currency
+        }
+
+        const quoteReq = await this.httpClient.post<TBBQuoteRequest, TBBQuoteResponse>(`${this.cbsConfig.config.BLUE_BANK_URL}/quotes`, quoteBlueBankRequest, { headers: this.getAuthHeaders() })
+
+        const bbQuote = quoteReq.data.data;
+
+
         return Promise.resolve({
             payeeFspCommissionAmountCurrency: this.cbsConfig.CURRENCY,
-            payeeFspFeeAmount: '0',
+            payeeFspFeeAmount: bbQuote.fee.toString(),
             payeeFspFeeAmountCurrency: this.cbsConfig.CURRENCY,
-            payeeReceiveAmount: quoteRequest.amount,
+            payeeReceiveAmount: (bbQuote.amount - bbQuote.fee).toString(),
             payeeReceiveAmountCurrency: this.cbsConfig.CURRENCY,
             quoteId: quoteRequest.quoteId,
             transactionId: quoteRequest.transactionId,
-            transferAmount: quoteRequest.amount,
+            transferAmount: bbQuote.amount.toString(),
             transferAmountCurrency: this.cbsConfig.CURRENCY,
         });
     }
 
     async reserveFunds(transfer: TtransferRequest): Promise<TtransferResponse> {
         this.logger.info(`Reserving funds for transfer request`, transfer);
-        if (transfer.to.idValue === '+2203628891') {
-            // timeout
-            await new Promise((resolve) => setTimeout(resolve, 300_000));
-        } else if (transfer.to.idValue === '+2203628890') {
-            // abort
-            throw ConnectorError.cbsConfigUndefined('Abort Transfer', '2000', 500);
+        await this.getAccount(transfer.to.idValue); // confirms the payee exists before reserving
+
+        const reservationRequest: TReserveFundsRequest = {
+            account_id: transfer.to.idValue,
+            amount: Number(transfer.amount),
+            currency: transfer.currency,
         }
-        return Promise.resolve({
-            homeTransactionId: crypto.randomUUID(),
+
+        const reserveReq = await this.httpClient.post<TReserveFundsRequest, TReserveFundsResponse>(
+            `${this.cbsConfig.config.BLUE_BANK_URL}/funds/reserve`,
+            reservationRequest,
+            { headers: this.getAuthHeaders() }
+        );
+
+        if (!reserveReq.data.success) {
+            throw ConnectorError.cbsConfigUndefined('Blue Bank rejected the reservation', '2003', 500);
+        }
+        const reserveId = reserveReq.data.data.reserveId;
+        return {
+            homeTransactionId: reserveId,
             transferState: 'RESERVED',
-        });
+        };
     }
 
     async unreserveFunds(transferUpdate: TtransferPatchNotificationRequest): Promise<void> {
