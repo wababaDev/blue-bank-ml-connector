@@ -10,7 +10,7 @@ import {
 import { blueBankConfig } from './config';
 import { BlueBankCBSClient} from './CBSClient';
 import { ConnectorError } from './errors';
-import { TBlueBankConfig } from './types';
+
 
 const httpClient: IHTTPClient = AxiosClientFactory.createAxiosClientInstance();
 

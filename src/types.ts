@@ -50,14 +50,14 @@ export type TReserveFundsRequest = {
 
 // Unreserve Funds Request
 
-export type RUnreserveFundsData = {
+export type TUnreserveFundsData = {
     reserve_id: string,
     reason: string
 }
 
 
 // Commit Funds Request
-export type CommitReservedFunds ={
+export type TCommitReservedFunds ={
   reserve_id: string
 }
 

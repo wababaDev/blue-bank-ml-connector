@@ -15,7 +15,7 @@ import {
     TtransferResponse,
 } from '@mojaloop/core-connector-lib';
 import { ConnectorError } from './errors';
-import { TAccountInfoResponse, TBBQuoteRequest, TBlueBankConfig, TBBQuoteResponse, TAccountInfoResponseData, TReserveFundsResponse, TReserveFundsRequest } from './types';
+import { TAccountInfoResponse, TBBQuoteRequest, TBlueBankConfig, TBBQuoteResponse, TAccountInfoResponseData, TReserveFundsResponse, TReserveFundsRequest, TCommitReservedFunds, TUnreserveFundsData, TRefundRequest, TRefundResponse } from './types';
 
 export class BlueBankCBSClient implements ICbsClient {
     cbsConfig: TCBSConfig<TBlueBankConfig>;
@@ -142,21 +142,97 @@ export class BlueBankCBSClient implements ICbsClient {
         };
     }
 
-    async unreserveFunds(transferUpdate: TtransferPatchNotificationRequest): Promise<void> {
-        this.logger.info(`Unreserving funds for request `, transferUpdate);
-        return Promise.resolve();
+    async commitReservedFunds(transferUpdate: TtransferPatchNotificationRequest): Promise<void> {
+        this.logger.info(`Committing funds for request`, transferUpdate);
+
+        const homeTransactionId = transferUpdate.homeTransactionId;
+        if (!homeTransactionId) {
+            throw ConnectorError.cbsConfigUndefined(
+                'Missing homeTransactionId in transfer update',
+                '2004',
+                400
+            );
+        }
+        const commitRequest: TCommitReservedFunds = {
+            reserve_id: homeTransactionId,
+        };
+
+        const commitRes = await this.httpClient.post<TCommitReservedFunds, TReserveFundsResponse>(
+            `${this.cbsConfig.config.BLUE_BANK_URL}/funds/commit`,
+            commitRequest,
+            { headers: this.getAuthHeaders() }
+        );
+
+        if (!commitRes.data.success) {
+            throw ConnectorError.cbsConfigUndefined('Blue Bank rejected the commit', '2004', 500);
+        }
     }
 
-    async commitReservedFunds(transferUpdate: TtransferPatchNotificationRequest): Promise<void> {
-        this.logger.info(`Committing funds for request `, transferUpdate);
-        return Promise.resolve();
+    async unreserveFunds(transferUpdate: TtransferPatchNotificationRequest): Promise<void> {
+        this.logger.info(`Unreserving funds for request`, transferUpdate);
+
+        const homeTransactionId = transferUpdate.homeTransactionId;
+        if (!homeTransactionId) {
+            throw ConnectorError.cbsConfigUndefined(
+                'Missing homeTransactionId in transfer update',
+                '2004',
+                400
+            );
+        }
+
+        const lastError = transferUpdate.lastError;
+        if (!lastError?.httpStatusCode) {
+            throw ConnectorError.cbsConfigUndefined(
+                'Missing last error in transfer update',
+                '2004',
+                400
+            );
+        }
+        const unreserveRequest: TUnreserveFundsData = {
+            reserve_id: homeTransactionId,
+            reason: `Transfer aborted downstream (HTTP ${lastError.httpStatusCode}) — unreserve initiated by core connector`,
+        };
+
+        const unreserveRes = await this.httpClient.post<TUnreserveFundsData, TReserveFundsResponse>(
+            `${this.cbsConfig.config.BLUE_BANK_URL}/funds/unreserve`,
+            unreserveRequest,
+            { headers: this.getAuthHeaders() }
+        );
+
+        if (!unreserveRes.data.success) {
+            throw ConnectorError.cbsConfigUndefined('Blue Bank rejected the unreserve', '2005', 500);
+        }
     }
+
 
     async handleRefund(
         updateSendMoneyDeps: TCBSUpdateSendMoneyRequest,
         transferId: string,
         transferRes: TtransferErrorResponse,
     ): Promise<void> {
-        this.logger.info(`Processing refund for req ${updateSendMoneyDeps} and transferId ${transferId}`);
+        let errorMessage = transferRes.message;
+        if (!errorMessage) {
+            errorMessage = 'Transfer failed for an unspecified reason — refund initiated by core connector';
+        }
+
+        this.logger.info(
+            `Processing refund for transferId ${transferId}, homeTransactionId ${updateSendMoneyDeps.homeTransactionId}`,
+            { updateSendMoneyDeps, transferRes },
+        );
+
+        const refundRequest: TRefundRequest = {
+            home_transaction_id: updateSendMoneyDeps.homeTransactionId,
+            reason: errorMessage,
+        };
+
+        const res = await this.httpClient.post<TRefundRequest, TRefundResponse>(
+            `${this.cbsConfig.config.BLUE_BANK_URL}/debits/refund`,
+            refundRequest,
+            { headers: this.getAuthHeaders() }
+        );
+
+        if (!res.data.success) {
+            throw ConnectorError.cbsConfigUndefined('Blue Bank refund failed', '2005', 500);
+        }
     }
 }
