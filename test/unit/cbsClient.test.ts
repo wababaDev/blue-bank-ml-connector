@@ -1,4 +1,4 @@
-import { IHTTPClient, ILogger,Party, TQuoteResponse, TtransferResponse } from "@mojaloop/core-connector-lib";
+import { IHTTPClient, ILogger, Party, TQuoteResponse, TtransferResponse } from "@mojaloop/core-connector-lib";
 import { BlueBankCBSClient } from "../../src/CBSClient";
 import { blueBankConfig } from "../../src/config";
 
@@ -75,7 +75,7 @@ describe("BlueBankCBSClient", () => {
             } as any);
 
             const quote: TQuoteResponse = await cbsClient.getQuote({
-                from: { idValue: "260970000000" },
+                to: { idValue: "260970000000" },
                 amount: "100",
                 currency: "ZMW",
                 quoteId: "q1",
@@ -90,7 +90,7 @@ describe("BlueBankCBSClient", () => {
             mockHttpClient.get.mockRejectedValueOnce({ response: { status: 404 } });
 
             await expect(
-                cbsClient.getQuote({ from: { idValue: "00000000000" }, amount: "100", currency: "ZMW" } as any)
+                cbsClient.getQuote({ to: { idValue: "00000000000" }, amount: "100", currency: "ZMW" } as any)
             ).rejects.toThrow();
 
             expect(mockHttpClient.post).not.toHaveBeenCalled();
@@ -101,26 +101,34 @@ describe("BlueBankCBSClient", () => {
             mockHttpClient.post.mockResolvedValueOnce({ data: { success: false, data: null } } as any);
 
             await expect(
-                cbsClient.getQuote({ from: { idValue: "260970000000" }, amount: "100", currency: "ZMW" } as any)
+                cbsClient.getQuote({ to: { idValue: "260970000000" }, amount: "100", currency: "ZMW" } as any)
             ).rejects.toThrow();
         });
     });
 
     describe("reserveFunds", () => {
-        test("returns RESERVED with the reserveId as homeTransactionId", async () => {
+        test("returns RESERVED with transferId echoed back as homeTransactionId", async () => {
             mockHttpClient.get.mockResolvedValueOnce({ data: { success: true, data: {} } } as any);
             mockHttpClient.post.mockResolvedValueOnce({
-                data: { success: true, data: { reserveId: "abc-123", status: "RESERVED" } },
+                data: { success: true, data: { reserveId: "xyz-999", status: "RESERVED" } },
             } as any);
 
             const res: TtransferResponse = await cbsClient.reserveFunds({
                 to: { idValue: "260970000000" },
+                transferId: "abc-123",
                 amount: "50",
                 currency: "ZMW",
             } as any);
 
             expect(res.transferState).toBe("RESERVED");
             expect(res.homeTransactionId).toBe("abc-123");
+
+            // confirm what actually got sent to the mock
+            expect(mockHttpClient.post).toHaveBeenCalledWith(
+                expect.stringContaining("/funds/reserve"),
+                expect.objectContaining({ transfer_id: "abc-123", account_id: "260970000000" }),
+                expect.anything()
+            );
         });
 
         test("throws when Blue Bank rejects the reservation", async () => {
@@ -128,7 +136,7 @@ describe("BlueBankCBSClient", () => {
             mockHttpClient.post.mockResolvedValueOnce({ data: { success: false, data: null } } as any);
 
             await expect(
-                cbsClient.reserveFunds({ to: { idValue: "260970000000" }, amount: "50", currency: "ZMW" } as any)
+                cbsClient.reserveFunds({ to: { idValue: "260970000000" }, transferId: "abc-123", amount: "50", currency: "ZMW" } as any)
             ).rejects.toThrow();
         });
     });
@@ -138,15 +146,22 @@ describe("BlueBankCBSClient", () => {
             mockHttpClient.post.mockResolvedValueOnce({ data: { success: true, data: {} } } as any);
 
             await expect(
-                cbsClient.commitReservedFunds({ homeTransactionId: "abc-123" } as any)
+                cbsClient.commitReservedFunds({ transferId: "abc-123" } as any)
             ).resolves.toBeUndefined();
+
+            // worth adding: confirm the RIGHT field actually got sent to the mock
+            expect(mockHttpClient.post).toHaveBeenCalledWith(
+                expect.stringContaining("/funds/commit"),
+                expect.objectContaining({ reserve_id: "abc-123" }),
+                expect.anything()
+            );
         });
 
         test("throws when Blue Bank rejects the commit", async () => {
             mockHttpClient.post.mockResolvedValueOnce({ data: { success: false, data: null } } as any);
 
             await expect(
-                cbsClient.commitReservedFunds({ homeTransactionId: "abc-123" } as any)
+                cbsClient.commitReservedFunds({ transferId: "abc-123" } as any)
             ).rejects.toThrow();
         });
     });
@@ -154,7 +169,7 @@ describe("BlueBankCBSClient", () => {
     describe("unreserveFunds", () => {
         test("throws if lastError.httpStatusCode is missing", async () => {
             await expect(
-                cbsClient.unreserveFunds({ homeTransactionId: "abc-123", lastError: {} } as any)
+                cbsClient.unreserveFunds({ transferId: "abc-123", lastError: {} } as any)
             ).rejects.toThrow(/Missing last error/);
 
             expect(mockHttpClient.post).not.toHaveBeenCalled();
@@ -165,20 +180,18 @@ describe("BlueBankCBSClient", () => {
 
             await expect(
                 cbsClient.unreserveFunds({
-                    homeTransactionId: "abc-123",
+                    transferId: "abc-123",
                     lastError: { httpStatusCode: 500 },
                 } as any)
             ).resolves.toBeUndefined();
 
             expect(mockHttpClient.post).toHaveBeenCalledWith(
                 expect.stringContaining("/funds/unreserve"),
-                expect.objectContaining({ reason: expect.stringContaining("500") }),
+                expect.objectContaining({ reserve_id: "abc-123", reason: expect.stringContaining("500") }),
                 expect.anything()
             );
         });
-    });
-
-    describe("handleRefund", () => {
+    }); describe("handleRefund", () => {
         test("uses the real error message when present", async () => {
             mockHttpClient.post.mockResolvedValueOnce({ data: { success: true, data: {} } } as any);
 
