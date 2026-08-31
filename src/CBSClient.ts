@@ -90,10 +90,10 @@ export class BlueBankCBSClient implements ICbsClient {
     async getQuote(quoteRequest: TQuoteRequest): Promise<TQuoteResponse> {
         this.logger.info(`Processing quoteRequest`, quoteRequest);
 
-        await this.getAccount(quoteRequest.from.idValue);
+        await this.getAccount(quoteRequest.to.idValue);
 
         let quoteBlueBankRequest: TBBQuoteRequest = {
-            account_id: quoteRequest.from.idValue,
+            account_id: quoteRequest.to.idValue,
             amount: Number(quoteRequest.amount),
             currency: quoteRequest.currency
         }
@@ -103,7 +103,7 @@ export class BlueBankCBSClient implements ICbsClient {
         const bbQuote = quoteReq.data.data;
 
 
-        return Promise.resolve({
+        return {
             payeeFspCommissionAmountCurrency: this.cbsConfig.CURRENCY,
             payeeFspFeeAmount: bbQuote.fee.toString(),
             payeeFspFeeAmountCurrency: this.cbsConfig.CURRENCY,
@@ -113,17 +113,18 @@ export class BlueBankCBSClient implements ICbsClient {
             transactionId: quoteRequest.transactionId,
             transferAmount: bbQuote.amount.toString(),
             transferAmountCurrency: this.cbsConfig.CURRENCY,
-        });
+        };
     }
 
     async reserveFunds(transfer: TtransferRequest): Promise<TtransferResponse> {
         this.logger.info(`Reserving funds for transfer request`, transfer);
-        await this.getAccount(transfer.to.idValue); // confirms the payee exists before reserving
+        await this.getAccount(transfer.to.idValue);
 
         const reservationRequest: TReserveFundsRequest = {
             account_id: transfer.to.idValue,
             amount: Number(transfer.amount),
             currency: transfer.currency,
+            transfer_id: transfer.transferId
         }
 
         const reserveReq = await this.httpClient.post<TReserveFundsRequest, TReserveFundsResponse>(
@@ -135,9 +136,9 @@ export class BlueBankCBSClient implements ICbsClient {
         if (!reserveReq.data.success) {
             throw ConnectorError.cbsConfigUndefined('Blue Bank rejected the reservation', '2003', 500);
         }
-        const reserveId = reserveReq.data.data.reserveId;
+
         return {
-            homeTransactionId: reserveId,
+            homeTransactionId: transfer.transferId,
             transferState: 'RESERVED',
         };
     }
@@ -145,16 +146,16 @@ export class BlueBankCBSClient implements ICbsClient {
     async commitReservedFunds(transferUpdate: TtransferPatchNotificationRequest): Promise<void> {
         this.logger.info(`Committing funds for request`, transferUpdate);
 
-        const homeTransactionId = transferUpdate.homeTransactionId;
-        if (!homeTransactionId) {
+        const transactionId = transferUpdate.transferId;
+        if (!transactionId) {
             throw ConnectorError.cbsConfigUndefined(
-                'Missing homeTransactionId in transfer update',
+                'Missing transactionId in transfer update',
                 '2004',
                 400
             );
         }
         const commitRequest: TCommitReservedFunds = {
-            reserve_id: homeTransactionId,
+            reserve_id: transactionId,
         };
 
         const commitRes = await this.httpClient.post<TCommitReservedFunds, TReserveFundsResponse>(
@@ -171,10 +172,10 @@ export class BlueBankCBSClient implements ICbsClient {
     async unreserveFunds(transferUpdate: TtransferPatchNotificationRequest): Promise<void> {
         this.logger.info(`Unreserving funds for request`, transferUpdate);
 
-        const homeTransactionId = transferUpdate.homeTransactionId;
-        if (!homeTransactionId) {
+        const transferId = transferUpdate.transferId;
+        if (!transferId) {
             throw ConnectorError.cbsConfigUndefined(
-                'Missing homeTransactionId in transfer update',
+                'Missing transferId in transfer update',
                 '2004',
                 400
             );
@@ -188,8 +189,9 @@ export class BlueBankCBSClient implements ICbsClient {
                 400
             );
         }
+
         const unreserveRequest: TUnreserveFundsData = {
-            reserve_id: homeTransactionId,
+            reserve_id: transferId,
             reason: `Transfer aborted downstream (HTTP ${lastError.httpStatusCode}) — unreserve initiated by core connector`,
         };
 

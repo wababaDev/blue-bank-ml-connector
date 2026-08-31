@@ -12,10 +12,10 @@ type TBlueBankResponse<T> = {
 // Get Account Info
 
 export type TAccountInfoResponseData = {
-    accountId: string,
-    name: string,
-    currency: string,
-    isActive: boolean
+    accountId: string;
+    name: string;
+    currency: string;
+    isActive: boolean;
 }
 
 export type TAccountInfoResponse = TBlueBankResponse<TAccountInfoResponseData>
@@ -24,15 +24,15 @@ export type TAccountInfoResponse = TBlueBankResponse<TAccountInfoResponseData>
 // Quotes
 
 export type TBBQuoteRequest = {
-    account_id: string,
-    amount: number,
-    currency: string
+    account_id: string;
+    amount: number;
+    currency: string;
 }
 
 type TBBQuoteResponseData = {
-    amount: number,
-    fee: number,
-    currency: string
+    amount: number;
+    fee: number;
+    currency: string;
 }
 
 export type TBBQuoteResponse = TBlueBankResponse<TBBQuoteResponseData>
@@ -42,29 +42,30 @@ export type TBBQuoteResponse = TBlueBankResponse<TBBQuoteResponseData>
 
 
 export type TReserveFundsRequest = {
-    account_id: string,
-    amount: number,
-    currency: string
+    account_id: string;
+    amount: number;
+    currency: string;
+    transfer_id: string;
 }
 
 
 // Unreserve Funds Request
 
 export type TUnreserveFundsData = {
-    reserve_id: string,
-    reason: string
+    reserve_id: string;
+    reason: string;
 }
 
 
 // Commit Funds Request
 export type TCommitReservedFunds ={
-  reserve_id: string
+  reserve_id: string;
 }
 
 // Reserve, Unreserve and Commit Funds Response
 type TFundsReservationResult = {
-    reserveId: string,
-    status: string
+    reserveId: string;
+    status: string;
 }
 
 export type TReserveFundsResponse = TBlueBankResponse<TFundsReservationResult>
@@ -73,14 +74,14 @@ export type TReserveFundsResponse = TBlueBankResponse<TFundsReservationResult>
 // Payer Side
 
 export type TRefundRequest = {
-  home_transaction_id: string,
-  reason: string
+  home_transaction_id: string;
+  reason: string;
 }
 
 type TRefundResponseData = {
-    debitId: string,
-    homeTransactionId: string,
-    status: string
+    debitId: string;
+    homeTransactionId: string;
+    status: string;
   }
 
 export type TRefundResponse = TBlueBankResponse<TRefundResponseData>

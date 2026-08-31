@@ -99,7 +99,7 @@ export const config = Convict<IConnectorConfigSchema<TBlueBankConfig, never>>({
                 doc: 'Auth Key used for every request',
                 format: String,
                 default: null, // required
-                env: 'BLUE_BANK_CLIENT_ID',
+                env: 'BLUE_BANK_AUTH_KEY',
             },
           
         },
