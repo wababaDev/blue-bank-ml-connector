@@ -23,7 +23,7 @@ const coreConnector = coreConnectorServiceFactory({ cbsClient: cbsClient, config
 const SDK_URL = "http://localhost:3003";
 
 const MERCY_IDVALUE = "260970000000";
-const FAITH_IDVALUE = "260970000001"
+const FAITH_IDVALUE = "260970000001";
 const IDTYPE = "MSISDN";
 
 

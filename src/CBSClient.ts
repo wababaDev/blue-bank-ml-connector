@@ -96,9 +96,9 @@ export class BlueBankCBSClient implements ICbsClient {
             account_id: quoteRequest.to.idValue,
             amount: Number(quoteRequest.amount),
             currency: quoteRequest.currency
-        }
+        };
 
-        const quoteReq = await this.httpClient.post<TBBQuoteRequest, TBBQuoteResponse>(`${this.cbsConfig.config.BLUE_BANK_URL}/quotes`, quoteBlueBankRequest, { headers: this.getAuthHeaders() })
+        const quoteReq = await this.httpClient.post<TBBQuoteRequest, TBBQuoteResponse>(`${this.cbsConfig.config.BLUE_BANK_URL}/quotes`, quoteBlueBankRequest, { headers: this.getAuthHeaders() });
 
         const bbQuote = quoteReq.data.data;
 
@@ -125,7 +125,7 @@ export class BlueBankCBSClient implements ICbsClient {
             amount: Number(transfer.amount),
             currency: transfer.currency,
             transfer_id: transfer.transferId
-        }
+        };
 
         const reserveReq = await this.httpClient.post<TReserveFundsRequest, TReserveFundsResponse>(
             `${this.cbsConfig.config.BLUE_BANK_URL}/funds/reserve`,
