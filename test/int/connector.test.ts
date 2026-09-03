@@ -3,7 +3,7 @@ import { IHTTPClient, AxiosClientFactory, ICbsClient, logger, coreConnectorServi
 import { blueBankConfig } from "../../src/config";
 import { BlueBankCBSClient } from "../../src/CBSClient";
 import { ConnectorError } from "../../src/errors";
-import { confirmSendMoneyDTO, quoteRequestDTO, reserveTransferDTO, transferNotificationDTO } from "test/fixtures";
+import { quoteRequestDTO, reserveTransferDTO, transferNotificationDTO } from "test/fixtures";
 
 export type TBlueBankConfig = {
     BLUE_BANK_URL: string;

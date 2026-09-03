@@ -283,7 +283,7 @@ export const reserveTransferDTO = (amount: string): TtransferRequest => ({
 //   "transferId": "{{$randomUUID}}"
 // });
 const fulfilmentBuffer = crypto.randomBytes(32);
-const fulfilment = fulfilmentBuffer.toString("base64url");
+// const fulfilment = fulfilmentBuffer.toString("base64url");
 const condition = crypto.createHash("sha256").update(fulfilmentBuffer).digest("base64url");
 
 export const transferNotificationDTO = (params: {
