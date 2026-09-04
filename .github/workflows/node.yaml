@@ -15,4 +15,4 @@ on:
 
 jobs:
   node:
-    uses: infitx-org/actions/.github/workflows/node.yaml@main
+    uses: JengaCore/actions/.github/workflows/node.yaml@main

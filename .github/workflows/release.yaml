@@ -6,6 +6,6 @@ on:
 
 jobs:
   release:
-    uses: infitx-org/actions/.github/workflows/release.yaml@main
+    uses: JengaCore/actions/.github/workflows/release.yaml@main
     secrets:
       token: ${{ secrets.RELEASE_PLEASE_TOKEN }}
