@@ -63,7 +63,6 @@
     "typescript-eslint": "^8.69.0"
   },
     "overrides": {
-    "glob": "^11.0.0",
     "uuid": "^11.0.0"
   }
 }
