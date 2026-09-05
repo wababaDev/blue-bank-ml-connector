@@ -16,14 +16,14 @@ jobs:
           - dockerfile: Dockerfile
             image: bluebank-zm-dfsp-cc
             context: .
-          - dockerfile: cbs-mock/Dockerfile
-            image: bluebank-zm-dfsp-cc-cbs-mock
-            context: ./cbs-mock
-    uses: infitx-org/actions/.github/workflows/docker.yaml@main
+          # - dockerfile: cbs-mock/Dockerfile
+          #   image: bluebank-zm-dfsp-cc-cbs-mock
+          #   context: ./cbs-mock
+    uses: JengaCore/actions/.github/workflows/docker.yaml@main
     with:
       dockerfile: ${{ matrix.dockerfile }}
       image: ${{ matrix.image }}
       context: ${{ matrix.context }}
-      owner: ${{ github.repository_owner }}
+      owner: thewababa
     secrets:
-      REGISTRY_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
+      REGISTRY_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
