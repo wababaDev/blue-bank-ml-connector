@@ -1,6 +1,12 @@
 name: Docker
 run-name: Docker => ${{  github.event_name == 'pull_request' && github.event.pull_request.title || github.event.head_commit.message }}
 
+permissions:
+  contents: read
+  packages: write
+  pull-requests: write
+  security-events: write
+  
 on:
   push:
     tags: ["v*.*.*"]
