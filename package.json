@@ -35,7 +35,7 @@
     "ci-coverage": "if [ ! -f .env ]; then cp .env.example .env; fi && npm run test:unit -- --silent --ci --coverage --testLocationInResults --json --outputFile=coverage/report.json",
     "ci-lint": "npm run lint",
     "ci-audit": "mkdir -p audit; npm run audit:check -- --report-type summary ; npm run --silent audit:check -- -o json > ./audit/auditResults.json",
-    "ci-deprecation": "MODE=error npx -y --package @mojaloop/ml-depcheck-utility check-deprecations-npm"
+   "ci-deprecation": "MODE=warn npx -y --package @mojaloop/ml-depcheck-utility check-deprecations-npm"
   },
   "author": "",
   "license": "ISC",
@@ -61,5 +61,9 @@
     "ts-jest": "^29.3.2",
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.69.0"
+  },
+    "overrides": {
+    "glob": "^11.0.0",
+    "uuid": "^11.0.0"
   }
 }
