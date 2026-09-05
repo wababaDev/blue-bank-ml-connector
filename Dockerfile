@@ -1,6 +1,7 @@
 ## *Builder*
-FROM node:lts-alpine as builder
+FROM node:lts-alpine AS builder
 
+RUN apk update && apk upgrade --no-cache
 RUN apk add --no-cache git python3 build-base
 
 ## Create app directory
@@ -19,6 +20,7 @@ RUN npm run build
 ## *Application*
 FROM node:lts-alpine
 
+RUN apk update && apk upgrade --no-cache
 RUN apk add --no-cache git python3 g++ make
 WORKDIR /opt/app
 
