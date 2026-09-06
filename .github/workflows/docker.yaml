@@ -30,6 +30,7 @@ jobs:
       dockerfile: ${{ matrix.dockerfile }}
       image: ${{ matrix.image }}
       context: ${{ matrix.context }}
+      registry: docker.io
       owner: thewababa
     secrets:
       REGISTRY_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
