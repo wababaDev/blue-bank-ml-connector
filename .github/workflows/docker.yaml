@@ -32,5 +32,6 @@ jobs:
       context: ${{ matrix.context }}
       registry: docker.io
       owner: thewababa
+      username: thewababa
     secrets:
       REGISTRY_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
