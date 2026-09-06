@@ -1,6 +1,6 @@
 {
   "name": "bluebank-zm-dfsp-cc",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "bluebank-zm-dfsp-cc Core Connector",
   "main": "dist/src/index.js",
   "private": true,

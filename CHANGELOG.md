@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.0.1](https://github.com/wababaDev/blue-bank-ml-connector/compare/v1.0.0...v1.0.1) (2026-09-06)
+
+
+### Bug Fixes
+
+* pass explicit Docker Hub username to reusable workflow ([8e09919](https://github.com/wababaDev/blue-bank-ml-connector/commit/8e099196c887df3738ab1f9edb6cc56271781a63))
+* push docker images to Docker Hub instead of GHCR ([769ee81](https://github.com/wababaDev/blue-bank-ml-connector/commit/769ee8191ec882d7b71fb523185ef076c25dbc73))
+
 ## 1.0.0 (2026-09-06)
 
 
