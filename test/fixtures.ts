@@ -7,7 +7,7 @@ export const quoteRequestDTO = (IdValue: string): TQuoteRequest => ({
   "homeR2PTransactionId": crypto.randomUUID(),
   "amount": "1000",
   "amountType": "SEND",
-  "currency": "ZMW",
+  "currency": "XTS",
   "expiration": new Date(Date.now() + 60_000).toISOString(),
   "extensionList": [
     {
@@ -16,7 +16,7 @@ export const quoteRequestDTO = (IdValue: string): TQuoteRequest => ({
     }
   ],
   "feesAmount": "1000",
-  "feesCurrency": "ZMW",
+  "feesCurrency": "XTS",
   "from": {
     "dateOfBirth": "1990-05-15",
     "displayName": "string",
@@ -71,7 +71,7 @@ export const reserveTransferDTO = (amount: string): TtransferRequest => ({
   "transferId": crypto.randomUUID(),
   "amount": amount,
   "amountType": "SEND",
-  "currency": "ZMW",
+  "currency": "XTS",
   "from": {
     "idType": "MSISDN",
     "idValue": "777123456"
@@ -82,20 +82,20 @@ export const reserveTransferDTO = (amount: string): TtransferRequest => ({
   },
   "ilpPacket": {
     "data": {
-      "amount": { "amount": "400", "currency": "ZMW" },
+      "amount": { "amount": "400", "currency": "XTS" },
       "payee": {
         "partyIdInfo": { "partyIdType": "MSISDN", "partyIdentifier": "260970000000", "fspId": "bluebank" },
         "merchantClassificationCode": "1234",
         "name": "Payee Name",
         "personalInfo": { "complexName": { "firstName": "PayeeFirstName", "lastName": "PayeeLastName" }, "dateOfBirth": "2001-08-21" },
-        "supportedCurrencies": ["ZMW"]
+        "supportedCurrencies": ["XTS"]
       },
       "payer": {
         "partyIdInfo": { "partyIdType": "MSISDN", "partyIdentifier": "0882997445", "fspId": "greenbank" },
         "merchantClassificationCode": "1234",
         "name": "Payer Name",
         "personalInfo": { "complexName": { "firstName": "PayerFirstName", "lastName": "PayerLastName" }, "dateOfBirth": "2001-08-21" },
-        "supportedCurrencies": ["ZMW"]
+        "supportedCurrencies": ["XTS"]
       },
       "quoteId": crypto.randomUUID(),
       "transactionId": crypto.randomUUID(),
@@ -111,15 +111,15 @@ export const reserveTransferDTO = (amount: string): TtransferRequest => ({
   "quote": {
     "expiration": new Date(Date.now() + 60_000).toISOString(),
     "payeeFspCommissionAmount": "0",
-    "payeeFspCommissionAmountCurrency": "ZMW",
+    "payeeFspCommissionAmountCurrency": "XTS",
     "payeeFspFeeAmount": "3",
-    "payeeFspFeeAmountCurrency": "ZMW",
+    "payeeFspFeeAmountCurrency": "XTS",
     "payeeReceiveAmount": "100",
-    "payeeReceiveAmountCurrency": "ZMW",
+    "payeeReceiveAmountCurrency": "XTS",
     "quoteId": crypto.randomUUID(),
     "transactionId": crypto.randomUUID(),
     "transferAmount": "103",
-    "transferAmountCurrency": "ZMW"
+    "transferAmountCurrency": "XTS"
   },
   "note": "Transfer Quote Request"
 });
@@ -195,7 +195,7 @@ export const reserveTransferDTO = (amount: string): TtransferRequest => ({
 //           "kycInformation": "{\n    \"metadata\": {\n        \"format\": \"JSON\",\n        \"version\": \"1.0\",\n        \"description\": \"Data containing KYC Information\"\n    },\n    \"data\": {\n        \"name\": \"John Doe\",\n        \"dob\": \"1980-05-15\",\n        \"gender\": \"Male\",\n        \"address\": \"123 Main Street, Anytown, USA\",\n        \"email\": \"johndoe@example.com\",\n        \"phone\": \"+1 555-123-4567\",\n        \"nationality\": \"US\",\n        \"passport_number\": \"AB1234567\",\n        \"issue_date\": \"2010-02-20\",\n        \"expiry_date\": \"2025-02-20\",\n        \"bank_account_number\": \"1234567890\",\n        \"bank_name\": \"Example Bank\",\n        \"employer\": \"ABC Company\",\n        \"occupation\": \"Software Engineer\",\n        \"income\": \"$80,000 per year\",\n        \"marital_status\": \"Single\",\n        \"dependents\": 0,\n        \"risk_level\": \"Low\"\n    }\n}"
 //         },
 //         "supportedCurrencies": [
-//           "ZMW"
+//           "XTS"
 //         ]
 //       },
 //       "payer": {
@@ -225,16 +225,16 @@ export const reserveTransferDTO = (amount: string): TtransferRequest => ({
 //           "kycInformation": "{\n    \"metadata\": {\n        \"format\": \"JSON\",\n        \"version\": \"1.0\",\n        \"description\": \"Data containing KYC Information\"\n    },\n    \"data\": {\n        \"name\": \"John Doe\",\n        \"dob\": \"1980-05-15\",\n        \"gender\": \"Male\",\n        \"address\": \"123 Main Street, Anytown, USA\",\n        \"email\": \"johndoe@example.com\",\n        \"phone\": \"+1 555-123-4567\",\n        \"nationality\": \"US\",\n        \"passport_number\": \"AB1234567\",\n        \"issue_date\": \"2010-02-20\",\n        \"expiry_date\": \"2025-02-20\",\n        \"bank_account_number\": \"1234567890\",\n        \"bank_name\": \"Example Bank\",\n        \"employer\": \"ABC Company\",\n        \"occupation\": \"Software Engineer\",\n        \"income\": \"$80,000 per year\",\n        \"marital_status\": \"Single\",\n        \"dependents\": 0,\n        \"risk_level\": \"Low\"\n    }\n}"
 //         },
 //         "supportedCurrencies": [
-//           "ZMW"
+//           "XTS"
 //         ]
 //       },
 //       "amountType": "RECEIVE",
 //       "amount": {
-//         "currency": "ZMW",
+//         "currency": "XTS",
 //         "amount": "5000000"
 //       },
 //       "fees": {
-//         "currency": "ZMW",
+//         "currency": "XTS",
 //         "amount": "123.45"
 //       },
 //       "transactionType": {
@@ -251,11 +251,11 @@ export const reserveTransferDTO = (amount: string): TtransferRequest => ({
 //       "converter": "PAYER",
 //       "currencyConversion": {
 //         "sourceAmount": {
-//           "currency": "ZMW",
+//           "currency": "XTS",
 //           "amount": "123.45"
 //         },
 //         "targetAmount": {
-//           "currency": "ZMW",
+//           "currency": "XTS",
 //           "amount": "123.45"
 //         }
 //       },
@@ -296,20 +296,20 @@ export const transferNotificationDTO = (params: {
 }): TtransferPatchNotificationRequest => {
   const ilpPacketShape = {
     data: {
-      amount: { amount: params.transferAmount, currency: "ZMW" },
+      amount: { amount: params.transferAmount, currency: "XTS" },
       payee: {
         partyIdInfo: { partyIdType: "MSISDN", partyIdentifier: params.payeeIdValue, fspId: "bluebank" },
         merchantClassificationCode: "1234",
         name: "Mercy Uzumaki",
         personalInfo: { complexName: { firstName: "Mercy", lastName: "Uzumaki" }, dateOfBirth: "1990-05-15" },
-        supportedCurrencies: ["ZMW"],
+        supportedCurrencies: ["XTS"],
       },
       payer: {
         partyIdInfo: { partyIdType: "MSISDN", partyIdentifier: params.payerIdValue, fspId: "greenbank" },
         merchantClassificationCode: "1234",
         name: "Alice Payer",
         personalInfo: { complexName: { firstName: "Alice", lastName: "Payer" }, dateOfBirth: "1990-05-15" },
-        supportedCurrencies: ["ZMW"],
+        supportedCurrencies: ["XTS"],
       },
       quoteId: params.quoteId,
       transactionId: params.transactionId,
@@ -329,7 +329,7 @@ export const transferNotificationDTO = (params: {
     from: { idType: "MSISDN", idValue: params.payerIdValue },
     amount: params.transferAmount,
     amountType: "SEND",
-    currency: "ZMW",
+    currency: "XTS",
     initiator: "PAYER",
     initiatorType: "CONSUMER",
     transactionType: "TRANSFER",
@@ -343,17 +343,17 @@ export const transferNotificationDTO = (params: {
       partyIdInfo: { partyIdType: "MSISDN", partyIdentifier: params.payeeIdValue, fspId: "bluebank" },
       name: "Mercy Uzumaki",
       personalInfo: { complexName: { firstName: "Mercy", lastName: "Uzumaki" }, dateOfBirth: "1990-05-15" },
-      supportedCurrencies: ["ZMW"],
+      supportedCurrencies: ["XTS"],
     },
     payer: {
       partyIdInfo: { partyIdType: "MSISDN", partyIdentifier: params.payerIdValue, fspId: "greenbank" },
       name: "Alice Payer",
       personalInfo: { complexName: { firstName: "Alice", lastName: "Payer" }, dateOfBirth: "1990-05-15" },
-      supportedCurrencies: ["ZMW"],
+      supportedCurrencies: ["XTS"],
     },
     amountType: "RECEIVE",
-    amount: { currency: "ZMW", amount: params.transferAmount },
-    fees: { currency: "ZMW", amount: "3" },
+    amount: { currency: "XTS", amount: params.transferAmount },
+    fees: { currency: "XTS", amount: "3" },
     transactionType: {
       scenario: "DEPOSIT",
       subScenario: "LOCALLY_DEFINED_SUBSCENARIO",
@@ -368,10 +368,10 @@ export const transferNotificationDTO = (params: {
   const quoteResponseShape = {
     quoteId: params.quoteId,
     transactionId: params.transactionId,
-    transferAmount: { amount: params.transferAmount, currency: "ZMW" },
-    payeeFspFeeAmount: { amount: "3", currency: "ZMW" },
-    payeeFspCommissionAmount: { amount: "0", currency: "ZMW" },
-    payeeReceiveAmount: { amount: (Number(params.transferAmount) - 3).toString(), currency: "ZMW" },
+    transferAmount: { amount: params.transferAmount, currency: "XTS" },
+    payeeFspFeeAmount: { amount: "3", currency: "XTS" },
+    payeeFspCommissionAmount: { amount: "0", currency: "XTS" },
+    payeeReceiveAmount: { amount: (Number(params.transferAmount) - 3).toString(), currency: "XTS" },
     ilpPacket: Buffer.from(JSON.stringify(ilpPacketShape)).toString("base64"),
     condition,
     expiration: new Date(Date.now() + 60_000).toISOString(),
@@ -381,13 +381,13 @@ export const transferNotificationDTO = (params: {
     quoteId: params.quoteId,
     transactionId: params.transactionId,
     transferAmount: params.transferAmount,
-    transferAmountCurrency: "ZMW",
+    transferAmountCurrency: "XTS",
     payeeFspFeeAmount: "3",
-    payeeFspFeeAmountCurrency: "ZMW",
+    payeeFspFeeAmountCurrency: "XTS",
     payeeFspCommissionAmount: "0",
-    payeeFspCommissionAmountCurrency: "ZMW",
+    payeeFspCommissionAmountCurrency: "XTS",
     payeeReceiveAmount: (Number(params.transferAmount) - 3).toString(),
-    payeeReceiveAmountCurrency: "ZMW",
+    payeeReceiveAmountCurrency: "XTS",
     expiration: new Date(Date.now() + 60_000).toISOString(),
 };
   return {
