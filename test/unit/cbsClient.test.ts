@@ -37,7 +37,7 @@ describe("BlueBankCBSClient", () => {
                 status: 200,
                 data: {
                     success: true,
-                    data: { accountId: "260970000000", name: "Mercy Uzumaki", currency: "ZMW", isActive: true },
+                    data: { accountId: "260970000000", name: "Mercy Uzumaki", currency: "XTS", isActive: true },
                 },
             } as any);
 
@@ -68,16 +68,16 @@ describe("BlueBankCBSClient", () => {
     describe("getQuote", () => {
         test("returns a mapped quote on success", async () => {
             mockHttpClient.get.mockResolvedValueOnce({
-                data: { success: true, data: { accountId: "260970000000", name: "Mercy Uzumaki", currency: "ZMW", isActive: true } },
+                data: { success: true, data: { accountId: "260970000000", name: "Mercy Uzumaki", currency: "XTS", isActive: true } },
             } as any);
             mockHttpClient.post.mockResolvedValueOnce({
-                data: { success: true, data: { amount: 100, fee: 1, currency: "ZMW" } },
+                data: { success: true, data: { amount: 100, fee: 1, currency: "XTS" } },
             } as any);
 
             const quote: TQuoteResponse = await cbsClient.getQuote({
                 to: { idValue: "260970000000" },
                 amount: "100",
-                currency: "ZMW",
+                currency: "XTS",
                 quoteId: "q1",
                 transactionId: "t1",
             } as any);
@@ -90,7 +90,7 @@ describe("BlueBankCBSClient", () => {
             mockHttpClient.get.mockRejectedValueOnce({ response: { status: 404 } });
 
             await expect(
-                cbsClient.getQuote({ to: { idValue: "00000000000" }, amount: "100", currency: "ZMW" } as any)
+                cbsClient.getQuote({ to: { idValue: "00000000000" }, amount: "100", currency: "XTS" } as any)
             ).rejects.toThrow();
 
             expect(mockHttpClient.post).not.toHaveBeenCalled();
@@ -101,7 +101,7 @@ describe("BlueBankCBSClient", () => {
             mockHttpClient.post.mockResolvedValueOnce({ data: { success: false, data: null } } as any);
 
             await expect(
-                cbsClient.getQuote({ to: { idValue: "260970000000" }, amount: "100", currency: "ZMW" } as any)
+                cbsClient.getQuote({ to: { idValue: "260970000000" }, amount: "100", currency: "XTS" } as any)
             ).rejects.toThrow();
         });
     });
@@ -117,7 +117,7 @@ describe("BlueBankCBSClient", () => {
                 to: { idValue: "260970000000" },
                 transferId: "abc-123",
                 amount: "50",
-                currency: "ZMW",
+                currency: "XTS",
             } as any);
 
             expect(res.transferState).toBe("RESERVED");
@@ -136,7 +136,7 @@ describe("BlueBankCBSClient", () => {
             mockHttpClient.post.mockResolvedValueOnce({ data: { success: false, data: null } } as any);
 
             await expect(
-                cbsClient.reserveFunds({ to: { idValue: "260970000000" }, transferId: "abc-123", amount: "50", currency: "ZMW" } as any)
+                cbsClient.reserveFunds({ to: { idValue: "260970000000" }, transferId: "abc-123", amount: "50", currency: "XTS" } as any)
             ).rejects.toThrow();
         });
     });
