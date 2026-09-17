@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.0.2](https://github.com/wababaDev/blue-bank-ml-connector/compare/v1.0.1...v1.0.2) (2026-09-17)
+
+
+### Bug Fixes
+
+* change of currency from ZME to XTS ([e8bb654](https://github.com/wababaDev/blue-bank-ml-connector/commit/e8bb654a86765c961496a4b8064ef94ad86eda75))
+* changed currency from ZMW to XTS ([c416925](https://github.com/wababaDev/blue-bank-ml-connector/commit/c4169255e40d26088af55a3cffa115a90a98c6f8))
+* pass explicit Docker Hub username to reusable workflow ([8e09919](https://github.com/wababaDev/blue-bank-ml-connector/commit/8e099196c887df3738ab1f9edb6cc56271781a63))
+
 ## [1.0.1](https://github.com/wababaDev/blue-bank-ml-connector/compare/v1.0.0...v1.0.1) (2026-09-17)
 
 
