@@ -70,7 +70,6 @@ export class BlueBankCBSClient implements ICbsClient {
             idType: 'MSISDN',
             idValue: account.accountId,
             type: 'PERSON',
-            supportedCurrencies: account.currency,
             kycInformation: account.isActive ? 'Active account' : 'Inactive account',
             middleName: account.name.split(' ')[0]
         };
