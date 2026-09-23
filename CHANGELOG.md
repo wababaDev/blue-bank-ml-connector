@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.0.3](https://github.com/wababaDev/blue-bank-ml-connector/compare/v1.0.2...v1.0.3) (2026-09-23)
+
+
+### Bug Fixes
+
+* removed supported currencies in party response ([779754f](https://github.com/wababaDev/blue-bank-ml-connector/commit/779754f05aa4fd2f7ab710d70ece606bd6e320d4))
+* removed supported currencies in party response ([1873430](https://github.com/wababaDev/blue-bank-ml-connector/commit/18734307f2acead84a1f6f9fd99aa0702b3cac5d))
+
 ## [1.0.2](https://github.com/wababaDev/blue-bank-ml-connector/compare/v1.0.1...v1.0.2) (2026-09-17)
 
 
